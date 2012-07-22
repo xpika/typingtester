@@ -8,7 +8,7 @@ works when compiled with ghc --make typingtester
 usage:
 
 
-sh-3.2$ ghc --make typingtester
+sh-3.2$ ghc --make typingtester  
 [1 of 1] Compiling Main             ( typingtester.hs, typingtester.o )
 Linking typingtester ...
 sh-3.2$ ./typingtester
