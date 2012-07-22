@@ -18,5 +18,5 @@ main = forever $ do
 	 let speed = numWords / (timeinunits/60)
 	 putStrLn (printf "%d words in %f seconds for a speed of %f WPM (words per minute)" (round numWords :: Int) timeinunits speed )
 	 
-time = getClockTime
+time = getClockTime 
 difftimes t1 t2 = diffClockTimes t1 t2
