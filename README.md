@@ -1,4 +1,6 @@
 typingtester
 ============
 
-Typing speed tester
+Typing speed tester. 
+
+works when compiled with ghc --make typingtester
