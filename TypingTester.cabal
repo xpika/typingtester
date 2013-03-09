@@ -6,6 +6,7 @@ license:             GPL-3
 license-file:        LICENSE
 author:              Alan Hawkins
 maintainer:          hawk.alan@gmailcom
+homepage:            https://github.com/xpika/typingtester
 category:            Game
 build-type:          Simple
 cabal-version:       >=1.8
