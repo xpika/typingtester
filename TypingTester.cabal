@@ -1,0 +1,15 @@
+name:                TypingTester
+version:             0.1.0.0
+synopsis:            Command Line Typing speed tester
+description:         Prompts the user to type anything they wish. Notifies them of how long it took.
+license:             GPL-3
+license-file:        LICENSE
+author:              Alan Hawkins
+maintainer:          hawk.alan@gmailcom
+category:            Game
+build-type:          Simple
+cabal-version:       >=1.8
+
+executable TypingTester
+  Main-Is: typingtester.hs
+  build-depends:       base ==4.5.* , time
