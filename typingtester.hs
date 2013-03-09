@@ -1,11 +1,8 @@
-import System.Posix.Time
-import Data.List
-import System.Time
-import Text.Printf
 import Control.Monad
-import System.IO
-import System.Posix.Unistd
+import Data.List
 import Data.Time
+import System.IO
+import Text.Printf
 
 hPutStrFlush h str = hPutStr h str >> hFlush h 
 
