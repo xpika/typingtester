@@ -6,6 +6,7 @@ import Text.Printf
 
 hPutStrFlush h str = hPutStr h str >> hFlush h 
 
+
 main = 
   forever $ do
      -- prompt user to type
