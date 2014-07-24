@@ -14,7 +14,7 @@ extra-source-files: README.md
 
 executable typingtester
   Main-Is: typingtester.hs
-  build-depends:       base ==4.5.* , time
+  build-depends:       base <10000 , time <10000
 
 source-repository head
   type:     git

@@ -4,7 +4,7 @@ import Data.Time
 import System.IO
 import Text.Printf
 
-hPutStrFlush h str = hPutStr h str >> hFlush h 
+hPutStrFlush h str = putStr str >> hFlush h 
 
 
 main = 
