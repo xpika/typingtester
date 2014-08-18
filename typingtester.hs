@@ -1,3 +1,7 @@
+{-# Language BangPatterns #-}
+{-# Language DoAndIfThenElse #-}
+
+
 import Control.Monad
 import Data.List
 import Data.Time
@@ -6,41 +10,69 @@ import Text.Printf
 import System.Environment
 import System.Directory 
 import Data.Monoid
+import Data.Map
 
 hPutStrFlush h str = putStr str >> hFlush h 
 
 main = do
   a <- getArgs
-  let target_phrase = (concat $ intersperse " " a)
-  let target_phrase_set = not . null $ target_phrase 
-  d <- getAppUserDataDirectory "typingTester"
-  createDirectoryIfMissing True d
-  let file = (d++"/highscores.txt")
-  file_exists <- doesFileExist file
-  {-
-  a <- if file_exists then read . readFile exists 
-                      else return []
- -}
-  when target_phrase_set
-    (putStrLn ("target phrase: " ++ target_phrase))
-  foreverWith (0) $ \(x) -> do
-     -- prompt user to type
-     hPutStrFlush stdout (show x++": type something:")
-     -- grab time 
-     t1 <- getCurrentTime
-     -- grab input
-     line <- getLine
-     -- grab time 
-     t2 <- getCurrentTime
-     --print 2
-     let timeinunits = ( realToFrac $ diffUTCTime t2 t1 :: Float) 
-     let numWords = ( genericLength . words  $ line :: Float)
-     let speed = numWords / (timeinunits/60)
-     let match = line == target_phrase
-     if target_phrase_set && (not match) then putStrLn "failure to match"
-                                         else putStrLn (printf "%d words in %f seconds for a speed of %f WPM (words per minute)" (round numWords :: Int) timeinunits speed )
-     return (x+1)
+  if a == ["highscores"] then 
+    putStrLn "highscores"
+  else do
+    let target_phrase = (concat $ intersperse " " a)
+    let target_phrase_set = not . Data.List.null $ target_phrase 
+    d <- getAppUserDataDirectory "typingTester"
+    createDirectoryIfMissing True d
+    let fileName = (d++"/highscores.txt")
+    file_exists <- doesFileExist fileName
+    scores <- if file_exists then readFile fileName >>= return . read
+                             else return mempty
+    let !scores_strict = scores
+    when target_phrase_set
+      (putStrLn ("target phrase: " ++ target_phrase))
+    foreverWith (0,scores_strict) $ \(x,m) -> do
+       -- prompt user to type
+       hPutStrFlush stdout (show x++": type something:")
+       -- grab time 
+       t1 <- getCurrentTime
+       -- grab input
+       line <- getLine
+       -- grab time 
+       t2 <- getCurrentTime
+       --print 2
+       let timeinunits = ( realToFrac $ diffUTCTime t2 t1 :: Float) 
+       let numWords = ( genericLength . words  $ line :: Float)
+       let speed = numWords / (timeinunits/60)
+       let match = line == target_phrase
+       if target_phrase_set && (not match) then do
+         putStrLn "failure to match"
+         return (x+1, m)
+       else do
+         putStrLn (printf "%d words in %f seconds for a speed of %f WPM (words per minute)" (round numWords :: Int) timeinunits speed )
+         if target_phrase_set then do 
+           let (maybeExisting,newValue,newMap) = insertOrUpdateWith (\k e -> if speed > e then Just speed else Just e) target_phrase speed m
+           case newValue of 
+             Just spe -> do
+               putStrLn ("new record"
+                 ++ (
+                  case maybeExisting of
+                    Just ex -> " over " ++ (show ex)
+                    _ -> ""
+                 )
+                )
+               let newMapStr = show newMap
+               writeFile fileName newMapStr
+             Nothing -> return ()
+           return (x+1,newMap)
+         else 
+           return (x+1,m)
 
 foreverWith a m = do 
    b <- m a
    foreverWith b m
+
+insertOrUpdateWith f k v m = let existingValue = Data.Map.lookup k m
+  in case existingValue of 
+      Just x -> let (maybeUpdated,latestTable) = updateLookupWithKey f k m
+                in (existingValue,if maybeUpdated /= existingValue then existingValue else Nothing,latestTable)
+      Nothing -> (Nothing,(Just v),Data.Map.insert k v m)
