@@ -32,7 +32,7 @@ main = do
       (putStrLn ("target phrase: " ++ target_phrase))
     foreverWith (0,scores_strict) $ \(x,m) -> do
        -- prompt user to type
-       hPutStrFlush stdout (show x++": type something:")
+       hPutStrFlush stdout ("type something:")
        -- grab time 
        t1 <- getCurrentTime
        -- grab input
@@ -49,23 +49,18 @@ main = do
          return (x+1, m)
        else do
          putStrLn (printf "%d words in %f seconds for a speed of %f WPM (words per minute)" (round numWords :: Int) timeinunits speed )
-         if target_phrase_set then do 
-           let (maybeExisting,newValue,newMap) = insertOrUpdateWith (\k e -> if speed > e then Just speed else Just e) target_phrase speed m
-           case newValue of 
-             Just spe -> do
-               putStrLn ("new record"
-                 ++ (
-                  case maybeExisting of
-                    Just ex -> " over " ++ (show ex)
-                    _ -> ""
-                 )
-                )
-               let newMapStr = show newMap
-               writeFile fileName newMapStr
-             Nothing -> return ()
-           return (x+1,newMap)
-         else 
-           return (x+1,m)
+         let (maybeExisting,newValue,newMap) = insertOrUpdateWith (\k e -> if speed > e then Just speed else Just e) line speed m
+             (newValue',newMap') = if not target_phrase_set && maybeExisting == Nothing then (Nothing,m) else (newValue,newMap)
+         case newValue' of 
+           Just spe -> do
+             let recordStr = case maybeExisting of
+                    Just ex -> "new record over " ++ (show ex)
+                    _ -> "time recorded"
+             putStrLn recordStr
+             let newMapStr = show newMap'
+             writeFile fileName newMapStr
+           Nothing -> return ()
+         return (x+1,newMap')
 
 foreverWith a m = do 
    b <- m a
