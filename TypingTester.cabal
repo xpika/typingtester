@@ -1,5 +1,5 @@
 name: TypingTester
-version: 0.1.0.3
+version: 0.1.0.5
 cabal-version: >=1.8
 build-type: Simple
 license: GPL-3
@@ -20,6 +20,7 @@ source-repository head
 
 executable typingtester
     main-is: typingtester.hs
+    extensions: Safe
     build-depends:
         base <10000,
         time <10000,
